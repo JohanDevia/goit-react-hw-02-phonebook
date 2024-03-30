@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
+import { Container, FormPhonebook } from './Phonebook.styled';
 
 class Phonebook extends Component {
   state = {
@@ -30,13 +31,14 @@ class Phonebook extends Component {
     e.preventDefault();
     const { name, number, contacts } = this.state;
 
+    // Check if the name is already in the agenda
     const isNameExists = contacts.some(
       contact => contact.name.toLowerCase() === name.trim().toLowerCase()
     );
 
     if (isNameExists) {
       alert(`The contact ${name.trim()} is already in the agenda.`);
-      return;
+      return; // Exit the function if the name is already in the agenda
     }
 
     if (name.trim() && number.trim()) {
@@ -53,6 +55,13 @@ class Phonebook extends Component {
     }
   };
 
+  // Handle contact deletion
+  handleContactDelete = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
+  };
+
   // Render contact list
   renderContacts = () => {
     const { contacts, filter } = this.state;
@@ -64,6 +73,9 @@ class Phonebook extends Component {
         {filteredContacts.map(contact => (
           <li key={contact.id}>
             {contact.name} - {contact.number}
+            <button onClick={() => this.handleContactDelete(contact.id)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -73,9 +85,9 @@ class Phonebook extends Component {
   render() {
     const { name, number, filter } = this.state;
     return (
-      <div className="App">
-        <h1>Phonebook </h1>
-        <form onSubmit={this.handleSubmit}>
+      <Container className="App">
+        <h1>PHONEBOOK</h1>
+        <FormPhonebook onSubmit={this.handleSubmit}>
           <label htmlFor="name">Name</label>
           <input
             type="text"
@@ -97,8 +109,10 @@ class Phonebook extends Component {
             onChange={this.handleInputChange}
           />
           <button type="submit">Add Contact</button>
-        </form>
+        </FormPhonebook>
+
         <div>
+          <p>Contacts</p>
           <label htmlFor="filter">Search:</label>
           <input
             type="text"
@@ -109,9 +123,9 @@ class Phonebook extends Component {
             onChange={this.handleFilterChange}
           />
         </div>
-        <p>Contacts</p>
+
         {this.renderContacts()}
-      </div>
+      </Container>
     );
   }
 }
